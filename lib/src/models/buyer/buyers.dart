@@ -1,0 +1,119 @@
+import 'dart:convert';
+
+import 'billing_address.dart';
+import 'contact.dart';
+import 'shipping_address.dart';
+
+class PaymayaBuyer {
+  final String firstName;
+  final String middleName;
+  final String lastName;
+  final String birthday;
+  final String customerSince;
+  final String? sex;
+  final PaymayaContact contact;
+  final PaymayaShippingAddress shippingAddress;
+  final PaymayaBillingAddress billingAddress;
+  PaymayaBuyer({
+    required this.firstName,
+    required this.middleName,
+    required this.lastName,
+    required this.birthday,
+    required this.customerSince,
+    this.sex,
+    required this.contact,
+    required this.shippingAddress,
+    required this.billingAddress,
+  });
+
+  PaymayaBuyer copyWith({
+    String? firstName,
+    String? middleName,
+    String? lastName,
+    String? birthday,
+    String? customerSince,
+    String? sex,
+    PaymayaContact? contact,
+    PaymayaShippingAddress? shippingAddress,
+    PaymayaBillingAddress? billingAddress,
+  }) {
+    return PaymayaBuyer(
+      firstName: firstName ?? this.firstName,
+      middleName: middleName ?? this.middleName,
+      lastName: lastName ?? this.lastName,
+      birthday: birthday ?? this.birthday,
+      customerSince: customerSince ?? this.customerSince,
+      sex: sex ?? this.sex,
+      contact: contact ?? this.contact,
+      shippingAddress: shippingAddress ?? this.shippingAddress,
+      billingAddress: billingAddress ?? this.billingAddress,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'PaymayaBuyer(firstName: $firstName, middleName: $middleName, lastName: $lastName, birthday: $birthday, customerSince: $customerSince, sex: $sex, contact: $contact, shippingAddress: $shippingAddress, billingAddress: $billingAddress)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is PaymayaBuyer &&
+        other.firstName == firstName &&
+        other.middleName == middleName &&
+        other.lastName == lastName &&
+        other.birthday == birthday &&
+        other.customerSince == customerSince &&
+        other.sex == sex &&
+        other.contact == contact &&
+        other.shippingAddress == shippingAddress &&
+        other.billingAddress == billingAddress;
+  }
+
+  @override
+  int get hashCode {
+    return firstName.hashCode ^
+        middleName.hashCode ^
+        lastName.hashCode ^
+        birthday.hashCode ^
+        customerSince.hashCode ^
+        sex.hashCode ^
+        contact.hashCode ^
+        shippingAddress.hashCode ^
+        billingAddress.hashCode;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'firstName': firstName,
+      'middleName': middleName,
+      'lastName': lastName,
+      'birthday': birthday,
+      'customerSince': customerSince,
+      'sex': sex,
+      'contact': contact.toMap(),
+      'shippingAddress': shippingAddress.toMap(),
+      'billingAddress': billingAddress.toMap(),
+    };
+  }
+
+  factory PaymayaBuyer.fromMap(Map<String, dynamic> map) {
+    return PaymayaBuyer(
+      firstName: map['firstName'] ?? '',
+      middleName: map['middleName'] ?? '',
+      lastName: map['lastName'] ?? '',
+      birthday: map['birthday'] ?? '',
+      customerSince: map['customerSince'] ?? '',
+      sex: map['sex'],
+      contact: PaymayaContact.fromMap(map['contact']),
+      shippingAddress: PaymayaShippingAddress.fromMap(map['shippingAddress']),
+      billingAddress: PaymayaBillingAddress.fromMap(map['billingAddress']),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory PaymayaBuyer.fromJson(String source) =>
+      PaymayaBuyer.fromMap(json.decode(source));
+}
