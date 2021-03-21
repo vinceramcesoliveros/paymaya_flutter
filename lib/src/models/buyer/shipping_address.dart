@@ -1,37 +1,123 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'billing_address.dart';
 
-class PaymayaShippingAddress implements PaymayaBillingAddress {
-  final String? phone;
-  final String email;
-  final String shippingType;
+/// Paymaya Shipping type
+enum ShippingType {
+  /// Standard
+  st,
 
-  // Billing Address
+  /// Same Day
+  sd
+}
 
-  final String firstName;
-  final String lastName;
-  final String middleName;
-  final String? line1;
-  final String? lin2;
-  final String city;
-  final String state;
-  final String zipCode;
-  final String countryCode;
+ShippingType _shippingtype(String type) {
+  if (type == 'ST') {
+    return ShippingType.st;
+  }
+  return ShippingType.sd;
+}
+
+///{@template shipping}
+/// Example:
+/// Extended class of [PaymayaBillingAddress].
+/// ```dart
+/// final shippingAddress = PaymayaShippingAddress(
+///   phone:'09123456789',
+///   email:'paymaya@flutter.com',
+///   shippingType: Shippingtype.st, // Standard
+///   firstName: 'John'
+///   middleName: 'Birb',
+///   lastName: 'Doe',
+///   line1: '123-4567',
+///   line2: '456-789',
+///   city: 'Davao City',
+///   state: 'Davao del Sur',
+///   zipCode: 8000,
+///   countryCode: 'PH', /// Default value is set to 'PH'
+/// );
+/// ```
+///{@endtemplate}
+class PaymayaShippingAddress {
+  /// {@macro shipping}
   PaymayaShippingAddress({
     this.phone,
     required this.email,
-    required this.shippingType,
+    this.shippingType = ShippingType.st,
     required this.firstName,
     required this.lastName,
     required this.middleName,
     this.line1,
-    this.lin2,
+    this.line2,
     required this.city,
     required this.state,
     required this.zipCode,
-    required this.countryCode,
+    this.countryCode = 'PH',
   });
+
+  ///{@macro shipping}
+  factory PaymayaShippingAddress.fromMap(Map<String, dynamic> map) {
+    return PaymayaShippingAddress(
+      phone: map['phone'],
+      email: map['email'] ?? '',
+      shippingType: _shippingtype(map['shippingType'] as String),
+      firstName: map['firstName'] ?? '',
+      lastName: map['lastName'] ?? '',
+      middleName: map['middleName'] ?? '',
+      line1: map['line1'],
+      line2: map['line2'],
+      city: map['city'] ?? '',
+      state: map['state'] ?? '',
+      zipCode: map['zipCode'] ?? '',
+      countryCode: map['countryCode'] ?? '',
+    );
+  }
+
+  ///{@macro shipping}
+  factory PaymayaShippingAddress.fromJson(String source) =>
+      PaymayaShippingAddress.fromMap(json.decode(source));
+
+  /// Autovalidated by PayMaya API. Feel free to validate at your own.
+  final String? phone;
+
+  /// Autovalidated by PayMaya API. Feel free to validate at your own.
+  final String email;
+
+  /// **ST** - Standard
+  ///
+  /// **SD** - Same Day
+  final ShippingType shippingType;
+
+  // Billing Address
+
+  /// first name of the buyer
+  final String firstName;
+
+  /// last name of the buyer
+  final String lastName;
+
+  /// middle name of the buyer
+  final String middleName;
+
+  /// optional [line1] value.
+  final String? line1;
+
+  /// optional [line2] value
+  final String? line2;
+
+  /// Buyer City
+  final String city;
+
+  /// Buyer State
+  final String state;
+
+  /// Buyer zipCode
+  final String zipCode;
+
+  /// Buyer countryCode
+  final String countryCode;
 
   @override
   bool operator ==(Object other) {
@@ -45,7 +131,7 @@ class PaymayaShippingAddress implements PaymayaBillingAddress {
         other.lastName == lastName &&
         other.middleName == middleName &&
         other.line1 == line1 &&
-        other.lin2 == lin2 &&
+        other.line2 == line2 &&
         other.city == city &&
         other.state == state &&
         other.zipCode == zipCode &&
@@ -61,7 +147,7 @@ class PaymayaShippingAddress implements PaymayaBillingAddress {
         lastName.hashCode ^
         middleName.hashCode ^
         line1.hashCode ^
-        lin2.hashCode ^
+        line2.hashCode ^
         city.hashCode ^
         state.hashCode ^
         zipCode.hashCode ^
@@ -70,18 +156,33 @@ class PaymayaShippingAddress implements PaymayaBillingAddress {
 
   @override
   String toString() {
-    return 'PaymayaShippingAddress(firstName: $firstName, lastName: $lastName, middleName: $middleName, phone: $phone, email: $email, shippingType: $shippingType, line1: $line1, lin2: $lin2, city: $city, state: $state, zipCode: $zipCode, countryCode: $countryCode)';
+    return '''PaymayaShippingAddress(
+      phone: $phone, 
+      email: $email, 
+      shippingType: $shippingType, 
+      firstName: $firstName, 
+      lastName: $lastName, 
+      middleName: $middleName, 
+      line1: $line1, 
+      line2: $line2, 
+      city: $city, 
+      state: $state, 
+      zipCode: $zipCode, 
+      countryCode: $countryCode
+      )
+      ''';
   }
 
+  ///{@macro shipping}
   PaymayaShippingAddress copyWith({
     String? phone,
     String? email,
-    String? shippingType,
+    ShippingType? shippingType,
     String? firstName,
     String? lastName,
     String? middleName,
     String? line1,
-    String? lin2,
+    String? line2,
     String? city,
     String? state,
     String? zipCode,
@@ -95,7 +196,7 @@ class PaymayaShippingAddress implements PaymayaBillingAddress {
       lastName: lastName ?? this.lastName,
       middleName: middleName ?? this.middleName,
       line1: line1 ?? this.line1,
-      lin2: lin2 ?? this.lin2,
+      line2: line2 ?? this.line2,
       city: city ?? this.city,
       state: state ?? this.state,
       zipCode: zipCode ?? this.zipCode,
@@ -103,16 +204,17 @@ class PaymayaShippingAddress implements PaymayaBillingAddress {
     );
   }
 
+  ///{@macro shipping}
   Map<String, dynamic> toMap() {
     return {
       'phone': phone,
       'email': email,
-      'shippingType': shippingType,
+      'shippingType': describeEnum(shippingType),
       'firstName': firstName,
       'lastName': lastName,
       'middleName': middleName,
       'line1': line1,
-      'lin2': lin2,
+      'line2': line2,
       'city': city,
       'state': state,
       'zipCode': zipCode,
@@ -120,25 +222,6 @@ class PaymayaShippingAddress implements PaymayaBillingAddress {
     };
   }
 
-  factory PaymayaShippingAddress.fromMap(Map<String, dynamic> map) {
-    return PaymayaShippingAddress(
-      phone: map['phone'] ?? '',
-      email: map['email'] ?? '',
-      shippingType: map['shippingType'] ?? '',
-      firstName: map['firstName'] ?? '',
-      lastName: map['lastName'] ?? '',
-      middleName: map['middleName'] ?? '',
-      line1: map['line1'] ?? '',
-      lin2: map['lin2'] ?? '',
-      city: map['city'] ?? '',
-      state: map['state'] ?? '',
-      zipCode: map['zipCode'] ?? '',
-      countryCode: map['countryCode'] ?? '',
-    );
-  }
-
+  ///{@macro shipping}
   String toJson() => json.encode(toMap());
-
-  factory PaymayaShippingAddress.fromJson(String source) =>
-      PaymayaShippingAddress.fromMap(json.decode(source));
 }

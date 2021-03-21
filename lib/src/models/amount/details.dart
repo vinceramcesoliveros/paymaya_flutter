@@ -1,12 +1,10 @@
 import 'dart:convert';
 
+/// {@template PaymayaDetails}
+///
 class PaymayaDetails {
-  final num discount;
-  final num serviceCharge;
-  final num shippingFee;
-  final num tax;
-  final num subtotal;
-  PaymayaDetails({
+  /// {@macro PaymayaDetails}
+  const PaymayaDetails({
     required this.discount,
     required this.serviceCharge,
     required this.shippingFee,
@@ -14,6 +12,37 @@ class PaymayaDetails {
     required this.subtotal,
   });
 
+  /// {@macro PaymayaDetails}
+  factory PaymayaDetails.fromMap(Map<String, dynamic> map) {
+    return PaymayaDetails(
+      discount: map['discount'] ?? 0,
+      serviceCharge: map['serviceCharge'] ?? 0,
+      shippingFee: map['shippingFee'] ?? 0,
+      tax: map['tax'] ?? 0,
+      subtotal: map['subtotal'] ?? 0,
+    );
+  }
+
+  /// {@macro PaymayaDetails}
+  factory PaymayaDetails.fromJson(String source) =>
+      PaymayaDetails.fromMap(json.decode(source));
+
+  /// computed value which the merchant declared
+  final num discount;
+
+  /// if necessary to include service charge to merchant.
+  final num serviceCharge;
+
+  /// shipping fee can be either delivery fee or the commute fee you declare.
+  final num shippingFee;
+
+  /// calculated tax from the usual VAT of 12%
+  final num tax;
+
+  /// subtotal of the amount plus the remaining [PaymayaDetails] properties.
+  final num subtotal;
+
+  ///{@macro PaymayaDetails}
   PaymayaDetails copyWith({
     num? discount,
     num? serviceCharge,
@@ -30,9 +59,19 @@ class PaymayaDetails {
     );
   }
 
+  /// Converts map to json string.
+  String toJson() => json.encode(toMap());
+
   @override
   String toString() {
-    return 'PaymayaDetails(discount: $discount, serviceCharge: $serviceCharge, shippingFee: $shippingFee, tax: $tax, subtotal: $subtotal)';
+    return '''
+    PaymayaDetails(
+      discount: $discount, 
+      serviceCharge: $serviceCharge, 
+      shippingFee: $shippingFee, 
+      tax: $tax, 
+      subtotal: $subtotal)
+    ''';
   }
 
   @override
@@ -56,6 +95,7 @@ class PaymayaDetails {
         subtotal.hashCode;
   }
 
+  /// Converts [PaymayaDetails] to [Map]
   Map<String, dynamic> toMap() {
     return {
       'discount': discount,
@@ -65,19 +105,4 @@ class PaymayaDetails {
       'subtotal': subtotal,
     };
   }
-
-  factory PaymayaDetails.fromMap(Map<String, dynamic> map) {
-    return PaymayaDetails(
-      discount: map['discount'] ?? 0,
-      serviceCharge: map['serviceCharge'] ?? 0,
-      shippingFee: map['shippingFee'] ?? 0,
-      tax: map['tax'] ?? 0,
-      subtotal: map['subtotal'] ?? 0,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory PaymayaDetails.fromJson(String source) =>
-      PaymayaDetails.fromMap(json.decode(source));
 }

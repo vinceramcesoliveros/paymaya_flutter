@@ -10,6 +10,7 @@ void main() {
   runApp(MaterialApp(home: MyApp()));
 }
 
+/// Your PayMaya Example App.
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
@@ -19,9 +20,9 @@ class _MyAppState extends State<MyApp> {
   final List<Shoe> _shoes = List.generate(5, (index) {
     return Shoe(
       amount: 100 * index,
-      currency: "PHP",
-      name: "Shoe #$index",
-      description: "A smol shoe size of S-$index",
+      currency: 'PHP',
+      name: 'Shoe #$index',
+      description: 'A smol shoe size of S-$index',
     );
   });
   late final PayMayaSDK _payMayaSdk;
@@ -47,8 +48,8 @@ class _MyAppState extends State<MyApp> {
         ),
         body: GridView.builder(
           itemCount: _shoes.length,
-          gridDelegate:
-              SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 250),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 250),
           itemBuilder: (context, index) {
             final shoe = _shoes[index];
             return GestureDetector(
@@ -77,17 +78,17 @@ class _MyAppState extends State<MyApp> {
                     ),
                     totalAmount: SinglePaymentAmount(
                       value: _amount.toString(),
-                      currency: "PHP",
+                      currency: 'PHP',
                     ),
                     requestReferenceNumber: '6319921');
                 final result =
                     await _payMayaSdk.createSinglePayment(singlePayment);
                 if (await canLaunch(result)) {
-                  _onRedirectUrl(result);
+                  await _onRedirectUrl(result);
                 }
               },
-              label: Text("Single Payment"),
-              icon: Icon(Icons.credit_card),
+              label: const Text('Single Payment'),
+              icon: const Icon(Icons.credit_card),
             ),
             FloatingActionButton.extended(
               onPressed: () async {
@@ -103,20 +104,22 @@ class _MyAppState extends State<MyApp> {
                       value: cart.amount,
                       currency: cart.currency,
                     ),
-                    totalAmount:
-                        PaymayaAmount(value: cart.amount, currency: "PHP"),
+                    totalAmount: PaymayaAmount(
+                      value: cart.amount,
+                      currency: cart.currency,
+                    ),
                   );
                 }).toList();
                 final totalAmount = PaymayaAmount(
                   value: _amount,
-                  currency: "PHP",
+                  currency: 'PHP',
                 );
                 final _buyer = PaymayaBuyer(
-                  firstName: "John",
+                  firstName: 'John',
                   middleName: '',
-                  lastName: "Doe",
-                  customerSince: "2020-01-01",
-                  birthday: "1998-01-01",
+                  lastName: 'Doe',
+                  customerSince: '2020-01-01',
+                  birthday: '1998-01-01',
                   contact: PaymayaContact(
                       email: 'johndoe@x.com', phone: '0912345678'),
                   billingAddress: PaymayaBillingAddress(
@@ -130,13 +133,13 @@ class _MyAppState extends State<MyApp> {
                     countryCode: 'PH',
                     zipCode: '8000',
                     state: 'Davao',
-                    firstName: "John",
+                    firstName: 'John',
                     middleName: '',
-                    lastName: "Doe",
+                    lastName: 'Doe',
                     email: 'paymaya@flutter.com',
                     // ST - Standard
                     // SD - Same Day
-                    shippingType: 'ST',
+                    shippingType: ShippingType.sd,
                   ),
                 );
                 final redirectUrls =
@@ -150,10 +153,10 @@ class _MyAppState extends State<MyApp> {
                 final result = await _payMayaSdk.createCheckOut(
                   _checkout,
                 );
-                _onRedirectUrl(result);
+                await _onRedirectUrl(result);
               },
               label: Text('Checkout Cart(${_cart.length})'),
-              icon: Icon(Icons.shopping_basket),
+              icon: const Icon(Icons.shopping_basket),
             ),
           ],
         ));
@@ -174,11 +177,11 @@ class _MyAppState extends State<MyApp> {
 
     if (isPaid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("CHECKOUT PAID!")),
+        const SnackBar(content: Text('CHECKOUT PAID!')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("CANCELLED BY USER")),
+        const SnackBar(content: Text('CANCELLED BY USER')),
       );
     }
   }
@@ -205,7 +208,7 @@ class _ShoeCard extends StatelessWidget {
             title: Text(shoe.name),
             subtitle: Text(shoe.description),
             trailing: Text(
-              "${shoe.currency} ${shoe.amount.toStringAsFixed(2)}",
+              '${shoe.currency} ${shoe.amount.toStringAsFixed(2)}',
             ),
           )
         ],
@@ -214,6 +217,9 @@ class _ShoeCard extends StatelessWidget {
   }
 }
 
+/// A WebView to present the paymaya url.
+/// It varies which platform you are using.
+/// The Desktop & Web have the same User Agent.
 class CheckoutPage extends StatefulWidget {
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
@@ -222,7 +228,7 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
-    final String url = ModalRoute.of(context)?.settings.arguments as String;
+    final url = ModalRoute.of(context)?.settings.arguments as String;
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context, false);
@@ -235,7 +241,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             bottomBar: null,
             topBar: Row(children: [
               IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
@@ -245,7 +251,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           initialUrl: url,
           javascriptEnabled: true,
           debuggingEnabled: kDebugMode,
-          iframeSettings: WebBrowserIFrameSettings(
+          iframeSettings: const WebBrowserIFrameSettings(
             allow: WebBrowserFeaturePolicy(
               payment: true,
               publicKeyCredentialsGet: true,
@@ -256,11 +262,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: Text('Something went wrong'),
-                  content: Text("$error"),
+                  title: const Text('Something went wrong'),
+                  content: Text('$error'),
                   actions: [
                     TextButton(
-                      child: Text("close"),
+                      child: const Text('close'),
                       onPressed: () {
                         Navigator.pop(context, false);
                       },

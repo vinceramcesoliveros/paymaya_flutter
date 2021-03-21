@@ -10,8 +10,9 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 /// A web implementation of the PaymayaFlutter plugin.
 class PaymayaFlutterWeb {
+  // ignore: public_member_api_docs
   static void registerWith(Registrar registrar) {
-    final MethodChannel channel = MethodChannel(
+    final channel = MethodChannel(
       'paymaya_flutter',
       const StandardMethodCodec(),
       registrar,

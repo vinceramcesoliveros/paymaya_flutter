@@ -4,17 +4,14 @@ import 'billing_address.dart';
 import 'contact.dart';
 import 'shipping_address.dart';
 
+/// {@template buyer}
+/// The [PaymayaBuyer] will be inserted after the redirect url
+/// response.
+///
+/// {@endtemplate}
 class PaymayaBuyer {
-  final String firstName;
-  final String middleName;
-  final String lastName;
-  final String birthday;
-  final String customerSince;
-  final String? sex;
-  final PaymayaContact contact;
-  final PaymayaShippingAddress shippingAddress;
-  final PaymayaBillingAddress billingAddress;
-  PaymayaBuyer({
+  //// {@macro buyer}
+  const PaymayaBuyer({
     required this.firstName,
     required this.middleName,
     required this.lastName,
@@ -26,6 +23,51 @@ class PaymayaBuyer {
     required this.billingAddress,
   });
 
+  factory PaymayaBuyer.fromMap(Map<String, dynamic> map) {
+    return PaymayaBuyer(
+      firstName: map['firstName'] ?? '',
+      middleName: map['middleName'] ?? '',
+      lastName: map['lastName'] ?? '',
+      birthday: map['birthday'] ?? '',
+      customerSince: map['customerSince'] ?? '',
+      sex: map['sex'],
+      contact: PaymayaContact.fromMap(map['contact']),
+      shippingAddress: PaymayaShippingAddress.fromMap(map['shippingAddress']),
+      billingAddress: PaymayaBillingAddress.fromMap(map['billingAddress']),
+    );
+  }
+
+  factory PaymayaBuyer.fromJson(String source) =>
+      PaymayaBuyer.fromMap(json.decode(source));
+
+  ///
+  final String firstName;
+
+  ///
+  final String middleName;
+
+  ///
+  final String lastName;
+
+  ///
+  final String birthday;
+
+  ///
+  final String customerSince;
+
+  ///
+  final String? sex;
+
+  ///
+  final PaymayaContact contact;
+
+  ///
+  final PaymayaShippingAddress shippingAddress;
+
+  ///
+  final PaymayaBillingAddress billingAddress;
+
+  /// {@macro billing}
   PaymayaBuyer copyWith({
     String? firstName,
     String? middleName,
@@ -52,7 +94,18 @@ class PaymayaBuyer {
 
   @override
   String toString() {
-    return 'PaymayaBuyer(firstName: $firstName, middleName: $middleName, lastName: $lastName, birthday: $birthday, customerSince: $customerSince, sex: $sex, contact: $contact, shippingAddress: $shippingAddress, billingAddress: $billingAddress)';
+    return '''PaymayaBuyer(
+      firstName: $firstName, 
+      middleName: $middleName, 
+      lastName: $lastName, 
+      birthday: $birthday, 
+      customerSince: $customerSince, 
+      sex: $sex, 
+      contact: $contact, 
+      shippingAddress: $shippingAddress, 
+      billingAddress: $billingAddress
+      )
+      ''';
   }
 
   @override
@@ -84,6 +137,7 @@ class PaymayaBuyer {
         billingAddress.hashCode;
   }
 
+  /// {@macro billing}
   Map<String, dynamic> toMap() {
     return {
       'firstName': firstName,
@@ -98,22 +152,6 @@ class PaymayaBuyer {
     };
   }
 
-  factory PaymayaBuyer.fromMap(Map<String, dynamic> map) {
-    return PaymayaBuyer(
-      firstName: map['firstName'] ?? '',
-      middleName: map['middleName'] ?? '',
-      lastName: map['lastName'] ?? '',
-      birthday: map['birthday'] ?? '',
-      customerSince: map['customerSince'] ?? '',
-      sex: map['sex'],
-      contact: PaymayaContact.fromMap(map['contact']),
-      shippingAddress: PaymayaShippingAddress.fromMap(map['shippingAddress']),
-      billingAddress: PaymayaBillingAddress.fromMap(map['billingAddress']),
-    );
-  }
-
+  /// {@macro billing}
   String toJson() => json.encode(toMap());
-
-  factory PaymayaBuyer.fromJson(String source) =>
-      PaymayaBuyer.fromMap(json.decode(source));
 }
