@@ -23,6 +23,7 @@ class PaymayaBuyer {
     required this.billingAddress,
   });
 
+  /// {@macro buyer}
   factory PaymayaBuyer.fromMap(Map<String, dynamic> map) {
     return PaymayaBuyer(
       firstName: map['firstName'] ?? '',
@@ -37,34 +38,35 @@ class PaymayaBuyer {
     );
   }
 
+  ///{@macro buyer}
   factory PaymayaBuyer.fromJson(String source) =>
       PaymayaBuyer.fromMap(json.decode(source));
 
-  ///
+  /// Buyer first name
   final String firstName;
 
-  ///
+  /// Buyer middle name
   final String middleName;
 
-  ///
+  /// Buyer last name
   final String lastName;
 
-  ///
+  /// Buyer birthday
   final String birthday;
 
-  ///
+  /// Buyer since
   final String customerSince;
 
-  ///
+  /// Buyer sex
   final String? sex;
 
-  ///
+  /// Buyer [PaymayaContact]
   final PaymayaContact contact;
 
-  ///
+  /// Buyer shipping address
   final PaymayaShippingAddress shippingAddress;
 
-  ///
+  /// Buyer billing address
   final PaymayaBillingAddress billingAddress;
 
   /// {@macro billing}
