@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:paymaya_flutter/paymaya_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:web_browser/web_browser.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'shoes.dart';
 
 void main() {
@@ -72,9 +73,9 @@ class _MyAppState extends State<MyApp> {
                     (previousValue, element) => previousValue + element.amount);
                 final singlePayment = PaymayaSinglePayment(
                     redirectUrl: PaymayaRedirectUrls(
-                      success: 'http://shop.someserver.com/success?id=6319921',
-                      failure: 'http://shop.someserver.com/failure?id=6319921',
-                      cancel: 'http://shop.someserver.com/cancel?id=6319921',
+                      success: 'http://google.com/?success=1&id=6319921',
+                      failure: 'http://google.com/?failure=1&id=6319921',
+                      cancel: 'http://google.com/?cancel=1&id=6319921',
                     ),
                     totalAmount: SinglePaymentAmount(
                       value: _amount.toString(),
@@ -166,15 +167,17 @@ class _MyAppState extends State<MyApp> {
     if (!await canLaunch(url)) {
       return;
     }
+
     final isPaid = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return CheckoutPage();
+          return CheckoutPage('http://google.com/?success=1&id=6319921');
         },
         settings: RouteSettings(arguments: url),
       ),
     );
 
+    // final isPaid = await launch(url);
     if (isPaid) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('CHECKOUT PAID!')),
@@ -221,11 +224,21 @@ class _ShoeCard extends StatelessWidget {
 /// It varies which platform you are using.
 /// The Desktop & Web have the same User Agent.
 class CheckoutPage extends StatefulWidget {
+  const CheckoutPage(this.successURL);
+  final String successURL;
+
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
+  final Completer<WebViewController> _controller = Completer();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final url = ModalRoute.of(context)?.settings.arguments as String;
@@ -236,34 +249,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
       },
       child: Scaffold(
           body: SafeArea(
-        child: WebBrowser(
-          interactionSettings: WebBrowserInteractionSettings(
-            bottomBar: null,
-            topBar: Row(children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context, false);
-                },
-              )
-            ]),
-          ),
+        child: WebView(
+          onWebViewCreated: (controller) {
+            _controller.complete(controller);
+          },
           initialUrl: url,
-          javascriptEnabled: true,
+          javascriptMode: JavascriptMode.unrestricted,
           debuggingEnabled: kDebugMode,
-          iframeSettings: const WebBrowserIFrameSettings(
-            allow: WebBrowserFeaturePolicy(
-              payment: true,
-              publicKeyCredentialsGet: true,
-            ),
-          ),
-          onError: (error) async {
+          navigationDelegate: (request) async {
+            if (request.url == widget.successURL) {
+              Navigator.pop(context, true);
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+          onWebResourceError: (error) async {
             final dialog = await showDialog(
               context: context,
               builder: (context) {
                 return AlertDialog(
                   title: const Text('Something went wrong'),
-                  content: Text('$error'),
+                  content: Text('${error}'),
                   actions: [
                     TextButton(
                       child: const Text('close'),

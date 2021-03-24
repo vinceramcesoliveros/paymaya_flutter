@@ -1,65 +1,105 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 
 import 'models/models.dart';
 
+/// {@template paymayasdk}
+///
+/// This SDK is a mirror of [PayMayaSDK-JS](https://github.com/PayMaya/PayMaya-JS-SDK-v2).
+///
+/// The author chose this because other SDK uses WebView and that is not ideal
+/// for this package.
+///
+/// Example:
+///
+/// ```dart
+///
+/// final paymayaSdk = PayMayaSDK.init('pk-5123sdas', isSandbox: true);
+/// ```
+/// {@endtemplate}
 abstract class PayMayaSDK {
-  factory PayMayaSDK.init(String publicKey, [bool isSandbox = true]) {
+  /// {@macro paymayasdk}
+  /// This method initializes SDK.
+  /// It must be run before other methods.
+  ///
+  /// Throws [ArgumentError] when invoking other methods without running `init()`.
+  factory PayMayaSDK.init(String publicKey, {bool isSandbox = true}) {
     return _PayMayaSDK(publicKey, isSandbox);
   }
 
+  /// Use this to request request link from PayMaya API.
+  /// Be sure to read the documentation
+  /// [here](https://s3-us-west-2.amazonaws.com/developers.paymaya.com.pg/pay-by-paymaya/index.html#basic-authorization)
   Future<String> genericRequestFn(
       {required Map<String, dynamic> requestBody, required String url}) {
-    throw UnimplementedError("Initialize Paymaya SDK using PayMayaSDK.init");
+    throw ArgumentError('Initialize Paymaya SDK using PayMayaSDK.init');
   }
 
+  /// ### Warning: THIS WILL ONLY WORK ON WEB
+  /// This method assigns a listener for credit card form method
+  /// [createdCreditCardForm]
+  /// - whenever the user fills all the information required
+  /// (cvc, credit card number and expiry date) and then tokenizes that data,
+  /// a `callback` will be fired with payment token.
+  @visibleForTesting
   void addTransactionHandler(
       Map<String, dynamic> event, void Function(String args) callback) {
-    throw UnimplementedError('Initialize PayMaya SDK using PayMayaSDK.init');
+    throw ArgumentError('Initialize PayMaya SDK using PayMayaSDK.init');
   }
 
+  /// This method redirects the user to PayMaya Checkout, where the user can
+  /// finalize his/her payment.
+  ///
+  /// This method returns a url which you will have to use whatever technique
+  /// you can use(url_launcher, webview, or iframe).
   Future<String> createCheckOut(PaymayaCheckout checkout) {
-    throw UnimplementedError('Initialize PayMaya SDK using PayMayaSDK.init');
+    throw ArgumentError('Initialize PayMaya SDK using PayMayaSDK.init');
   }
 
+  /// creates a wallet link
+  /// that allows charging to a PayMaya account.
   Future<String> createWalletLink(CreateWalletObject createWalletObject) {
-    throw UnimplementedError('Initialize PayMaya SDK using PayMayaSDK.init');
+    throw ArgumentError('Initialize PayMaya SDK using PayMayaSDK.init');
   }
 
+  /// creates a single payment redirection,
+  /// allowing the user to finalize the transaction.
   Future<String> createSinglePayment(PaymayaSinglePayment createSinglePayment) {
-    throw UnimplementedError('Initialize PayMaya SDK using PayMayaSDK.init');
+    throw ArgumentError('Initialize PayMaya SDK using PayMayaSDK.init');
   }
 
-  Future<String> createCreditCardForm() {
-    throw UnimplementedError('Initialize PayMaya SDK using PayMayaSDK.init');
+  @visibleForTesting
+  Future<String> createdCreditCardForm() {
+    throw ArgumentError('Initialize PayMaya SDK using PayMayaSDK.init');
   }
 }
 
 class _PayMayaSDK implements PayMayaSDK {
+  _PayMayaSDK(
+    this.publicKey,
+    this.isSandbox,
+  ) {
+    if (isSandbox) {
+      apiUrl = 'https://pg-sandbox.paymaya.com';
+      formUrl = 'https://paymayajs-staging.s3.amazonaws.com/dist/index.html';
+      eventOrigin = 'https://paymayajs-staging.s3.amazonaws.com';
+    } else {
+      apiUrl = 'https://pg.paymaya.com';
+      formUrl = 'https://paymayajs.s3.amazonaws.com/dist/index.html';
+      eventOrigin = 'https://paymayajs.s3.amazonaws.com';
+    }
+  }
+
   late String apiUrl;
   late final String publicKey;
   late final bool isSandbox;
   late String formUrl;
   late String eventOrigin;
-  _PayMayaSDK(
-    this.publicKey,
-    this.isSandbox,
-  ) {
-    if (this.isSandbox) {
-      this.apiUrl = 'https://pg-sandbox.paymaya.com';
-      this.formUrl =
-          'https://paymayajs-staging.s3.amazonaws.com/dist/index.html';
-      this.eventOrigin = 'https://paymayajs-staging.s3.amazonaws.com';
-    } else {
-      this.apiUrl = 'https://pg.paymaya.com';
-      this.formUrl = 'https://paymayajs.s3.amazonaws.com/dist/index.html';
-      this.eventOrigin = 'https://paymayajs.s3.amazonaws.com';
-    }
-  }
 
   void _checkIfInitialize() {
     if (publicKey == '' || apiUrl == '' || formUrl == '' || eventOrigin == '') {
-      throw 'You must first run init() method!';
+      throw ArgumentError('You must first run init() method!');
     }
   }
 
@@ -86,13 +126,13 @@ class _PayMayaSDK implements PayMayaSDK {
         callback(json['paymentTokenid']);
       }
     } catch (e) {
-      throw e;
+      throw ArgumentError(e);
     }
   }
 
   @override
-  Future<String> createCreditCardForm() {
-    throw UnimplementedError();
+  Future<String> createdCreditCardForm() {
+    throw ArgumentError();
   }
 
   @override
@@ -129,11 +169,11 @@ class _PayMayaSDK implements PayMayaSDK {
       {required Map<String, dynamic> requestBody, required String url}) async {
     final _http = _PayMayaHttp(publicKey);
     final response = await _http.post(
-      Uri.parse("$apiUrl$url"),
+      Uri.parse('$apiUrl$url'),
       body: jsonEncode(requestBody),
     );
     final json = jsonDecode(response.body);
-
+    print(json);
     if (response.statusCode != 200 || json['redirectUrl'] == null) {
       throw json;
     }

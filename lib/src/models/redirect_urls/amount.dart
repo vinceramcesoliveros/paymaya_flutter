@@ -2,24 +2,23 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+/// {@template singlepayment}
+/// Not identical with PaymayaAmount.
+///
+/// This was intended for SinglePayment method which uses
+/// the value as [String] instead of [num]
+/// {@endtemplate}
 class SinglePaymentAmount {
-  final String currency;
-  final String value;
-  final Map<String, dynamic>? metadata;
-  SinglePaymentAmount({
-    required this.currency,
+  ///{@macro singlepayment}
+  const SinglePaymentAmount({
+    this.currency = 'PH',
     required this.value,
     this.metadata,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'currency': currency,
-      'value': value,
-      'metadata': metadata,
-    };
-  }
-
+  /// {@macro singlepayment}
+  ///
+  /// Converts [Map] to [SinglePaymentAmount]
   factory SinglePaymentAmount.fromMap(Map<String, dynamic> map) {
     return SinglePaymentAmount(
       currency: map['currency'] ?? '',
@@ -28,11 +27,36 @@ class SinglePaymentAmount {
     );
   }
 
-  String toJson() => json.encode(toMap());
-
+  /// {@macro singlepayment}
+  /// Converts [String] to [SinglePaymentAmount]
   factory SinglePaymentAmount.fromJson(String source) =>
       SinglePaymentAmount.fromMap(json.decode(source));
 
+  /// Currency defaults to 'PH'
+  final String currency;
+
+  /// Total Amount of items
+  final String value;
+
+  /// See properties [here](https://s3-us-west-2.amazonaws.com/developers.paymaya.com.pg/pay-by-paymaya/index.html#features)
+  final Map<String, dynamic>? metadata;
+
+  /// {@macro singlepayment}
+  ///
+  /// Converts [SinglePaymentAmount] to [Map]
+  Map<String, dynamic> toMap() {
+    return {
+      'currency': currency,
+      'value': value,
+      'metadata': metadata,
+    };
+  }
+
+  /// {@macro singlepayment}
+  /// Converts [Map] to [String]
+  String toJson() => json.encode(toMap());
+
+  ///{@macro singlepayment}
   SinglePaymentAmount copyWith({
     String? currency,
     String? value,
@@ -59,6 +83,10 @@ class SinglePaymentAmount {
   int get hashCode => currency.hashCode ^ value.hashCode ^ metadata.hashCode;
 
   @override
-  String toString() =>
-      'SinglePaymentAmount(currency: $currency, value: $value, metadata: $metadata)';
+  String toString() => '''SinglePaymentAmount(
+        currency: $currency, 
+        value: $value, 
+        metadata: $metadata
+        )
+        ''';
 }
