@@ -115,7 +115,7 @@ class _MyAppState extends State<MyApp> {
                   value: _amount,
                   currency: 'PHP',
                 );
-                final _buyer = PaymayaBuyer(
+                const _buyer = PaymayaBuyer(
                   firstName: 'John',
                   middleName: '',
                   lastName: 'Doe',
@@ -171,7 +171,7 @@ class _MyAppState extends State<MyApp> {
     final isPaid = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return CheckoutPage('http://google.com/?success=1&id=6319921');
+          return const CheckoutPage('http://google.com/?success=1&id=6319921');
         },
         settings: RouteSettings(arguments: url),
       ),
@@ -220,15 +220,20 @@ class _ShoeCard extends StatelessWidget {
   }
 }
 
-/// A WebView to present the paymaya url.
-/// It varies which platform you are using.
-/// The Desktop & Web have the same User Agent.
+// ignore: public_member_api_docs
 class CheckoutPage extends StatefulWidget {
+  // ignore: public_member_api_docs
   const CheckoutPage(this.successURL);
+  // ignore: public_member_api_docs
   final String successURL;
 
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('successURL', successURL));
+  }
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
@@ -250,9 +255,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       child: Scaffold(
           body: SafeArea(
         child: WebView(
-          onWebViewCreated: (controller) {
-            _controller.complete(controller);
-          },
+          onWebViewCreated: _controller.complete,
           initialUrl: url,
           javascriptMode: JavascriptMode.unrestricted,
           debuggingEnabled: kDebugMode,
@@ -269,7 +272,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               builder: (context) {
                 return AlertDialog(
                   title: const Text('Something went wrong'),
-                  content: Text('${error}'),
+                  content: Text('$error'),
                   actions: [
                     TextButton(
                       child: const Text('close'),

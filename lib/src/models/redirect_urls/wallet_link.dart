@@ -2,31 +2,38 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import 'redirect_url.dart';
-
-class CreateWalletObject implements PaymayaRedirectUrls {
-  final String requestReferenceNumber;
-  final Map<String, dynamic>? metadata;
-  final String success;
-  final String cancel;
-  final String failure;
-  CreateWalletObject({
+/// {@template createwallet}
+/// Links your paymaya without re-logging in again.
+///
+/// ```dart
+/// final createWalletObject = CreateWalletObject(
+///   requestReferenceNumber: '65559',
+///   success:'https://yoururl.com/succes?id=65593',
+///   cancel: 'https://yoururl.com/cancel?id=65593',
+///   failure: 'https://yoururl.com/failure?id=65593',
+///   metadata: {
+///       ///...
+///   }
+/// );
+/// ```
+///
+/// Creates a wallet link that allows charging to a PayMaya account.
+/// The redirect URLs are used to go back to merchant’s server after the link
+/// has been processed depending on the status, as shown in the request body.
+/// The metadata is used to add payment facilitator information,
+/// as indicated in this section.
+/// {@endtemplate}
+class CreateWalletObject {
+  /// {@macro createwallet}
+  const CreateWalletObject({
     required this.requestReferenceNumber,
     this.metadata,
     required this.success,
     required this.cancel,
     required this.failure,
   });
-  Map<String, dynamic> toMap() {
-    return {
-      'requestReferenceNumber': requestReferenceNumber,
-      'metadata': metadata,
-      'success': success,
-      'cancel': cancel,
-      'failure': failure,
-    };
-  }
 
+  /// {@macro createwallet}
   factory CreateWalletObject.fromMap(Map<String, dynamic> map) {
     return CreateWalletObject(
       requestReferenceNumber: map['requestReferenceNumber'] ?? '',
@@ -37,11 +44,41 @@ class CreateWalletObject implements PaymayaRedirectUrls {
     );
   }
 
-  String toJson() => json.encode(toMap());
-
+  /// {@macro createwallet}
   factory CreateWalletObject.fromJson(String source) =>
       CreateWalletObject.fromMap(json.decode(source));
-  @override
+
+  /// request reference number from the merchant
+  final String requestReferenceNumber;
+
+  /// temporary solution, the metadata will have its own `type`'d properties
+  /// since everything will be converted to json.
+  final Map<String, dynamic>? metadata;
+
+  /// your success url callback.
+  final String success;
+
+  /// your cancel url callback.
+  final String cancel;
+
+  /// your failure url callback.
+  final String failure;
+
+  /// {@macro createwallet}
+  Map<String, dynamic> toMap() {
+    return {
+      'requestReferenceNumber': requestReferenceNumber,
+      'metadata': metadata,
+      'success': success,
+      'cancel': cancel,
+      'failure': failure,
+    };
+  }
+
+  /// convert [Map] to [String] json
+  String toJson() => json.encode(toMap());
+
+  /// {@macro createwallet}
   CreateWalletObject copyWith({
     String? requestReferenceNumber,
     Map<String, dynamic>? metadata,
@@ -61,7 +98,13 @@ class CreateWalletObject implements PaymayaRedirectUrls {
 
   @override
   String toString() {
-    return 'CreateWalletObject(requestReferenceNumber: $requestReferenceNumber, metadata: $metadata, success: $success, cancel: $cancel, failure: $failure)';
+    return '''CreateWalletObject(
+      requestReferenceNumber: $requestReferenceNumber, 
+      metadata: $metadata, 
+      success: $success, 
+      cancel: $cancel, 
+      failure: $failure)
+      ''';
   }
 
   @override

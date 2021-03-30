@@ -42,7 +42,7 @@ ShippingType _shippingtype(String type) {
 ///{@endtemplate}
 class PaymayaShippingAddress {
   /// {@macro shipping}
-  PaymayaShippingAddress({
+  const PaymayaShippingAddress({
     this.phone,
     required this.email,
     this.shippingType = ShippingType.st,

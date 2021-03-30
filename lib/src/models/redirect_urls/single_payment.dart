@@ -7,11 +7,19 @@ import 'package:paymaya_flutter/paymaya_flutter.dart';
 import 'amount.dart';
 import 'redirect_url.dart';
 
+/// {@template singlepayment}
+/// Single payment without the info of what the customer bought.
+/// It is as simple pay money method for quick transactions.
+/// ```dart
+/// final payment = PaymayaSinglePayment(
+///   redirectUrl: RedirectUrl(...),
+///   totalAmount: SinglePaymentAmount(...),
+///   requestReferenceNumber: '65593',
+/// );
+/// ```
+/// {@endtemplate}
 class PaymayaSinglePayment {
-  final PaymayaRedirectUrls redirectUrl;
-  final SinglePaymentAmount totalAmount;
-  final String requestReferenceNumber;
-  final Map<String, dynamic> metadata;
+  /// {@macro singlepayment}
   const PaymayaSinglePayment({
     required this.redirectUrl,
     required this.totalAmount,
@@ -19,6 +27,31 @@ class PaymayaSinglePayment {
     this.metadata = const {},
   });
 
+  /// {@macro singlepayment}
+  factory PaymayaSinglePayment.fromMap(Map<String, dynamic> map) {
+    return PaymayaSinglePayment(
+      redirectUrl: PaymayaRedirectUrls.fromMap(map['redirectUrl']),
+      totalAmount: SinglePaymentAmount.fromMap(map['totalAmount']),
+      requestReferenceNumber: map['requestReferenceNumber'] ?? '',
+      metadata: Map<String, dynamic>.from(map['metadata'] ?? const {}),
+    );
+  }
+
+  /// {@macro singlepayment}
+  factory PaymayaSinglePayment.fromJson(String source) =>
+      PaymayaSinglePayment.fromMap(json.decode(source));
+
+  /// your redirect urls
+  final PaymayaRedirectUrls redirectUrl;
+
+  /// total amount including currency and details
+  final SinglePaymentAmount totalAmount;
+
+  /// you request reference number.
+  final String requestReferenceNumber;
+
+  /// metadata for single payment
+  final Map<String, dynamic> metadata;
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -38,6 +71,7 @@ class PaymayaSinglePayment {
         metadata.hashCode;
   }
 
+  /// {@macro singlepayment}
   PaymayaSinglePayment copyWith({
     PaymayaRedirectUrls? redirectUrl,
     SinglePaymentAmount? totalAmount,
@@ -55,9 +89,14 @@ class PaymayaSinglePayment {
 
   @override
   String toString() {
-    return 'PaymayaSinglePayment(redirectUrl: $redirectUrl, totalAmount: $totalAmount, requestReferenceNumber: $requestReferenceNumber, metadata: $metadata)';
+    return '''PaymayaSinglePayment(
+      redirectUrl: $redirectUrl, 
+      totalAmount: $totalAmount, 
+      requestReferenceNumber: $requestReferenceNumber, 
+      metadata: $metadata)''';
   }
 
+  /// converts to [Map]
   Map<String, dynamic> toMap() {
     return {
       'redirectUrl': redirectUrl.toMap(),
@@ -67,17 +106,6 @@ class PaymayaSinglePayment {
     };
   }
 
-  factory PaymayaSinglePayment.fromMap(Map<String, dynamic> map) {
-    return PaymayaSinglePayment(
-      redirectUrl: PaymayaRedirectUrls.fromMap(map['redirectUrl']),
-      totalAmount: SinglePaymentAmount.fromMap(map['totalAmount']),
-      requestReferenceNumber: map['requestReferenceNumber'] ?? '',
-      metadata: Map<String, dynamic>.from(map['metadata'] ?? const {}),
-    );
-  }
-
+  /// converts [Map] to [String] json
   String toJson() => json.encode(toMap());
-
-  factory PaymayaSinglePayment.fromJson(String source) =>
-      PaymayaSinglePayment.fromMap(json.decode(source));
 }

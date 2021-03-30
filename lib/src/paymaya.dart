@@ -23,7 +23,8 @@ abstract class PayMayaSDK {
   /// This method initializes SDK.
   /// It must be run before other methods.
   ///
-  /// Throws [ArgumentError] when invoking other methods without running `init()`.
+  /// Throws [ArgumentError] when invoking other methods
+  /// without running `init()`.
   factory PayMayaSDK.init(String publicKey, {bool isSandbox = true}) {
     return _PayMayaSDK(publicKey, isSandbox);
   }
@@ -69,6 +70,9 @@ abstract class PayMayaSDK {
     throw ArgumentError('Initialize PayMaya SDK using PayMayaSDK.init');
   }
 
+  /// ### Not suitable for production. IF you have suggestions, give us a PR.
+  /// should only be called when it navigates to a new page
+  /// and fills up the credit card form.
   @visibleForTesting
   Future<String> createdCreditCardForm() {
     throw ArgumentError('Initialize PayMaya SDK using PayMayaSDK.init');
