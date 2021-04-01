@@ -13,31 +13,36 @@ is to use WebView related packages such as webview_flutter, web_browser or Platf
 ### Issues for WebView
 
 #### WEB
-Paymaya does not allow iframes to be loaded becasue the `X-FRAME-OPTIONS` was set to `deny`.
+PayMaya does not allow iframes to be loaded becasue the `X-FRAME-OPTIONS` was set to `deny`.
 So the only solution is to make a redirect url that closes the window. that way,
 you will have control thru your own logic.
 
 Example:
 ```dart
+
+    /// returns payment link.
+    final redirectUrl = await payMayaSDK.createCheckout(checkout);
     /// For Mobile:
     /// From the webview of your page. 
     final bool result = await Navigator.push(context, YourWebView());
-    
-
+    /// For Web:
+    /// Opens a new window to process payment.
+    if(await canLaunch(redirectUrl)){
+        await launch(redirectUrl);
+    }
 ```
 
 ### Usage
-> There are two usage. PayMayaSDK or Widgets that uses WebView.
 
 ### PayMayaSDK
 
-#### init
+#### `init()`
 Run this method first before invoking other methods.
 ```dart
 final payMayaSDK = PayMayaSDK.init('pk-Mn124x69sda', isSandBox: true);
 ```
 
-#### createCheckout
+#### `createCheckout`
 ```dart
 // inside of Future function
 final checkout = PaymayaCheckout(
@@ -56,9 +61,12 @@ final checkout = PaymayaCheckout(
   /// returns payment link.
   final redirectUrl = await payMayaSDK.createCheckout(checkout);
 ```
+TODOS:
 
-
-
+- [ ] Webhooks. This is useful for flutter web to monitor the redirect callback url
+- [ ] Custom Widget without using WebViews
+- [ ] Wallet Link Widget
+- [ ] Instructions for newly registered PayMaya Managers
 
 ### Donate
 <form action="https://www.paypal.com/donate" method="post" target="_top">
