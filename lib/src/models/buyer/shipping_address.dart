@@ -209,7 +209,7 @@ class PaymayaShippingAddress {
     return {
       'phone': phone,
       'email': email,
-      'shippingType': describeEnum(shippingType),
+      'shippingType': describeEnum(shippingType).toUpperCase(),
       'firstName': firstName,
       'lastName': lastName,
       'middleName': middleName,
