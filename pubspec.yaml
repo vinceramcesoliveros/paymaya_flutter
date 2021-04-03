@@ -1,6 +1,6 @@
 name: paymaya_flutter
 description: Unofficial PayMaya SDK for flutter. A mirror of https://github.com/PayMaya/PayMaya-JS-SDK-v2
-version: 0.0.1
+version: 0.1.0
 homepage: https://github.com/ram231/paymaya_flutter
 
 environment:
