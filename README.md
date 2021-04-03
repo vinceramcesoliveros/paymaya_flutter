@@ -5,7 +5,7 @@ Unofficial PayMaya SDK for Flutter.
 
 ### BLOCKERS
 
-my plan for this package was to make it accessible to all platforms.
+The plan for this package was to make it accessible to all platforms.
 But since PayMaya heavily relies on WebViews, The only possible way for this
 is to use WebView related packages such as webview_flutter, web_browser or Platform Channels.
 
@@ -19,7 +19,6 @@ you will have control thru your own logic.
 
 Example:
 ```dart
-
     /// returns payment link.
     final redirectUrl = await payMayaSDK.createCheckout(checkout);
     /// For Mobile:
@@ -67,7 +66,7 @@ TODOS:
 - [ ] Custom Widget without using WebViews
 - [ ] Wallet Link Widget
 - [ ] Instructions for newly registered PayMaya Managers
-
+- [ ] Support paymaya for non-flutter apps.
 ### Donate
 <form action="https://www.paypal.com/donate" method="post" target="_top">
 <input type="hidden" name="business" value="blusea231@gmail.com" />
