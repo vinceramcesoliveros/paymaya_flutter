@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
                 final _amount = _cart.fold<num>(0,
                     (previousValue, element) => previousValue + element.amount);
                 final singlePayment = PaymayaSinglePayment(
-                    redirectUrl: PaymayaRedirectUrls(
+                    redirectUrl: const PaymayaRedirectUrls(
                       success: 'http://google.com/?success=1&id=6319921',
                       failure: 'http://google.com/?failure=1&id=6319921',
                       cancel: 'http://google.com/?cancel=1&id=6319921',
@@ -84,8 +84,8 @@ class _MyAppState extends State<MyApp> {
                     requestReferenceNumber: '6319921');
                 final result =
                     await _payMayaSdk.createSinglePayment(singlePayment);
-                if (await canLaunch(result)) {
-                  await _onRedirectUrl(result);
+                if (await canLaunch(result.redirectUrl)) {
+                  await _onRedirectUrl(result.redirectUrl);
                 }
               },
               label: const Text('Single Payment'),
@@ -143,8 +143,11 @@ class _MyAppState extends State<MyApp> {
                     shippingType: ShippingType.sd,
                   ),
                 );
-                final redirectUrls =
-                    PaymayaRedirectUrls(success: '', failure: '', cancel: '');
+                final redirectUrls = const PaymayaRedirectUrls(
+                  success: '',
+                  failure: '',
+                  cancel: '',
+                );
                 final _checkout = PaymayaCheckout(
                     totalAmount: totalAmount,
                     buyer: _buyer,
@@ -154,7 +157,7 @@ class _MyAppState extends State<MyApp> {
                 final result = await _payMayaSdk.createCheckOut(
                   _checkout,
                 );
-                await _onRedirectUrl(result);
+                await _onRedirectUrl(result.redirectUrl);
               },
               label: Text('Checkout Cart(${_cart.length})'),
               icon: const Icon(Icons.shopping_basket),

@@ -11,7 +11,7 @@ import 'package:flutter/foundation.dart';
 class SinglePaymentAmount {
   ///{@macro singlepayment}
   const SinglePaymentAmount({
-    this.currency = 'PH',
+    this.currency = 'PHP',
     required this.value,
     this.metadata,
   });
@@ -21,7 +21,7 @@ class SinglePaymentAmount {
   /// Converts [Map] to [SinglePaymentAmount]
   factory SinglePaymentAmount.fromMap(Map<String, dynamic> map) {
     return SinglePaymentAmount(
-      currency: map['currency'] ?? '',
+      currency: map['currency'] ?? 'PHP',
       value: map['value'] ?? '',
       metadata: Map<String, dynamic>.from(map['metadata'] ?? const {}),
     );
@@ -33,7 +33,7 @@ class SinglePaymentAmount {
       SinglePaymentAmount.fromMap(json.decode(source));
 
   /// Currency defaults to 'PH'
-  final String currency;
+  final String? currency;
 
   /// Total Amount of items
   final String value;
@@ -46,7 +46,7 @@ class SinglePaymentAmount {
   /// Converts [SinglePaymentAmount] to [Map]
   Map<String, dynamic> toMap() {
     return {
-      'currency': currency,
+      'currency': currency ?? 'PHP',
       'value': value,
       'metadata': metadata,
     };
@@ -63,7 +63,7 @@ class SinglePaymentAmount {
     Map<String, dynamic>? metadata,
   }) {
     return SinglePaymentAmount(
-      currency: currency ?? this.currency,
+      currency: currency ?? this.currency ?? 'PHP',
       value: value ?? this.value,
       metadata: metadata ?? this.metadata,
     );

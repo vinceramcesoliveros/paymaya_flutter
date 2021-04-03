@@ -22,7 +22,7 @@ class PaymayaItem {
     this.code,
     this.description,
     required this.amount,
-    this.totalAmount,
+    required this.totalAmount,
   });
 
   ///{@macro item}
@@ -57,7 +57,7 @@ class PaymayaItem {
   final PaymayaAmount amount;
 
   ///
-  final PaymayaAmount? totalAmount;
+  final PaymayaAmount totalAmount;
 
   ///{@macro item}
   PaymayaItem copyWith({
@@ -121,7 +121,7 @@ class PaymayaItem {
       'code': code,
       'description': description,
       'amount': amount.toMap(),
-      'totalAmount': totalAmount?.toMap(),
+      'totalAmount': totalAmount.toMap(),
     };
   }
 

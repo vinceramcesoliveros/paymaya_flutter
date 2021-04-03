@@ -17,7 +17,7 @@ import 'dart:convert';
 ///{@endtemplate}
 class PaymayaRedirectUrls {
   /// {@macro redirecturl}
-  PaymayaRedirectUrls({
+  const PaymayaRedirectUrls({
     required this.success,
     required this.failure,
     required this.cancel,

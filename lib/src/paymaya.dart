@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
+import 'package:paymaya_flutter/src/models/response/response.dart';
 
 import 'models/models.dart';
 
@@ -32,7 +33,8 @@ abstract class PayMayaSDK {
   /// Use this to request request link from PayMaya API.
   /// Be sure to read the documentation
   /// [here](https://s3-us-west-2.amazonaws.com/developers.paymaya.com.pg/pay-by-paymaya/index.html#basic-authorization)
-  Future<String> genericRequestFn(
+  @visibleForTesting
+  Future<Map<String, dynamic>> genericRequestFn(
       {required Map<String, dynamic> requestBody, required String url}) {
     throw ArgumentError('Initialize Paymaya SDK using PayMayaSDK.init');
   }
@@ -54,19 +56,21 @@ abstract class PayMayaSDK {
   ///
   /// This method returns a url which you will have to use whatever technique
   /// you can use(url_launcher, webview, or iframe).
-  Future<String> createCheckOut(PaymayaCheckout checkout) {
+  Future<PaymayaResponse> createCheckOut(PaymayaCheckout checkout) {
     throw ArgumentError('Initialize PayMaya SDK using PayMayaSDK.init');
   }
 
   /// creates a wallet link
   /// that allows charging to a PayMaya account.
-  Future<String> createWalletLink(CreateWalletObject createWalletObject) {
+  Future<PaymayaResponse> createWalletLink(
+      CreateWalletObject createWalletObject) {
     throw ArgumentError('Initialize PayMaya SDK using PayMayaSDK.init');
   }
 
   /// creates a single payment redirection,
   /// allowing the user to finalize the transaction.
-  Future<String> createSinglePayment(PaymayaSinglePayment createSinglePayment) {
+  Future<PaymayaResponse> createSinglePayment(
+      PaymayaSinglePayment createSinglePayment) {
     throw ArgumentError('Initialize PayMaya SDK using PayMayaSDK.init');
   }
 
@@ -102,19 +106,19 @@ class _PayMayaSDK implements PayMayaSDK {
   late String eventOrigin;
 
   void _checkIfInitialize() {
-    if (publicKey == '' || apiUrl == '' || formUrl == '' || eventOrigin == '') {
-      throw ArgumentError('You must first run init() method!');
+    if ((publicKey.isEmpty)) {
+      throw ArgumentError('Public Key must not be empty');
     }
   }
 
   @override
-  Future<String> createCheckOut(PaymayaCheckout checkout) async {
+  Future<PaymayaResponse> createCheckOut(PaymayaCheckout checkout) async {
     try {
       _checkIfInitialize();
       final body = checkout.toMap();
       final response = await genericRequestFn(
           requestBody: body, url: '/checkout/v1/checkouts');
-      return response;
+      return PaymayaResponse.fromMap(response);
     } catch (e) {
       rethrow;
     }
@@ -140,7 +144,7 @@ class _PayMayaSDK implements PayMayaSDK {
   }
 
   @override
-  Future<String> createSinglePayment(
+  Future<PaymayaResponse> createSinglePayment(
       PaymayaSinglePayment createSinglePayment) async {
     try {
       _checkIfInitialize();
@@ -149,39 +153,40 @@ class _PayMayaSDK implements PayMayaSDK {
         requestBody: body,
         url: '/payby/v2/paymaya/payments',
       );
-      return response;
+      return PaymayaResponse.fromMap(response);
     } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<String> createWalletLink(CreateWalletObject createWalletObject) async {
+  Future<PaymayaResponse> createWalletLink(
+      CreateWalletObject createWalletObject) async {
     try {
       _checkIfInitialize();
       final response = await genericRequestFn(
           requestBody: createWalletObject.toMap(),
           url: '/payby/v2/paymaya/link');
-      return response;
+      return PaymayaResponse.fromMap(response);
     } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<String> genericRequestFn(
+  Future<Map<String, dynamic>> genericRequestFn(
       {required Map<String, dynamic> requestBody, required String url}) async {
     final _http = _PayMayaHttp(publicKey);
     final response = await _http.post(
       Uri.parse('$apiUrl$url'),
       body: jsonEncode(requestBody),
     );
-    final json = jsonDecode(response.body);
+    final Map<String, dynamic> json = jsonDecode(response.body);
     print(json);
     if (response.statusCode != 200 || json['redirectUrl'] == null) {
-      throw json;
+      throw Exception(json.toString());
     }
-    return json['redirectUrl'];
+    return json;
   }
 }
 
