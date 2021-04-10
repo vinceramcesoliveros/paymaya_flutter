@@ -83,10 +83,12 @@ class _MyAppState extends State<MyApp> {
                     ),
                     requestReferenceNumber: '6319921');
                 final result =
-                    await _payMayaSdk.createSinglePayment(singlePayment);
-                if (await canLaunch(result.redirectUrl)) {
-                  await _onRedirectUrl(result.redirectUrl);
-                }
+                    await _payMayaSdk.navigateToPayment(context, singlePayment);
+                final snackbar = SnackBar(
+                  content: Text('${describeEnum(result)}'),
+                );
+
+                ScaffoldMessenger.of(context).showSnackBar(snackbar);
               },
               label: const Text('Single Payment'),
               icon: const Icon(Icons.credit_card),
@@ -167,10 +169,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _onRedirectUrl(String url) async {
-    if (!await canLaunch(url)) {
+    final validUrl = await canLaunch(url);
+    if (!validUrl) {
       return;
     }
-
+    if (kIsWeb) {
+      await launch(
+        url,
+      );
+      return;
+    }
     final isPaid = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {

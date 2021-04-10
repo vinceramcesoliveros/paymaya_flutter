@@ -7,6 +7,7 @@ import 'dart:html' as html show window;
 
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// A web implementation of the PaymayaFlutter plugin.
 class PaymayaFlutterWeb {
@@ -29,6 +30,11 @@ class PaymayaFlutterWeb {
     switch (call.method) {
       case 'getPlatformVersion':
         return getPlatformVersion();
+      case 'checkoutPage':
+        if (await canLaunch(call.arguments)) {
+          return true;
+        }
+        return false;
       default:
         throw PlatformException(
           code: 'Unimplemented',
